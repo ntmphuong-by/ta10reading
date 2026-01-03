@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Success 10 - Full Culture & CLIL</title>
+    <style>
+        :root {
+            --primary: #0078d4;
+            --light-bg: #f3f2f1;
+            --white: #ffffff;
+            --text: #201f1e;
+            --highlight: #fff4ce; 
+            --accent: #d13438;
+            --border: #e1dfdd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            color: var(--text);
+            background-color: white;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 300px;
+            background-color: var(--light-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .header {
+            padding: 20px;
+            background-color: var(--primary);
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .menu-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .unit-block {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .unit-btn {
+            width: 100%;
+            text-align: left;
+            padding: 15px 20px;
+            background: white;
+            border: none;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        .unit-btn:hover { background-color: #edebe9; }
+
+        .section-list {
+            display: none;
+            background-color: #faf9f8;
+        }
+
+        .section-item {
+            padding: 12px 20px 12px 40px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            border-left: 4px solid transparent;
+            color: #605e5c;
+            border-bottom: 1px solid #f3f2f1;
+        }
+
+        .section-item:hover {
+            background-color: #eff6fc;
+            color: var(--primary);
+        }
+
+        .section-item.active {
+            background-color: #c7e0f4;
+            border-left-color: var(--primary);
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .toolbar {
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        .info h2 { margin: 0; font-size: 1.4rem; color: var(--primary); }
+        .info p { margin: 5px 0 0; color: #605e5c; font-size: 0.9rem; }
+
+        .controls button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+
+        .btn-play { background-color: var(--primary); color: white; border: none; }
+        .btn-play:hover { opacity: 0.9; }
+        .btn-stop { color: var(--accent); border-color: var(--accent); }
+        .btn-trans { color: #107c10; border-color: #107c10; }
+
+        /* SCRIPT VIEW */
+        .script-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+            scroll-behavior: smooth;
+        }
+
+        .script-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-bottom: 100px;
+        }
+
+        .line {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: background 0.2s;
+            cursor: pointer;
+            background-color: #fff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .line:hover { background-color: #f8f9fa; }
+        
+        .line.active {
+            background-color: var(--highlight);
+            border-left: 5px solid #ffd700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: scale(1.01);
+            transition: transform 0.2s;
+        }
+
+        .speaker {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .en { font-size: 1.3rem; line-height: 1.6; color: #201f1e; }
+        .vi { 
+            margin-top: 10px; 
+            font-size: 1.1rem; 
+            color: #605e5c; 
+            font-style: italic; 
+            font-family: 'Times New Roman', serif;
+            border-top: 1px dashed #e1dfdd;
+            padding-top: 8px;
+        }
+        .hidden { display: none; }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="header">GLOBAL SUCCESS 10</div>
+    <div class="menu-list" id="menu-root"></div>
+</div>
+
+<div class="main">
+    <div class="toolbar">
+        <div class="info">
+            <h2 id="lesson-title">Chào mừng</h2>
+            <p id="lesson-sub">Chọn bài học để hiển thị nội dung</p>
+        </div>
+        <div class="controls">
+            <button class="btn-trans" onclick="toggleTrans()">Aa Dịch</button>
+            <button class="btn-play" onclick="playAll()">▶ Đọc tất cả</button>
+            <button class="btn-stop" onclick="stopAudio()">⏹ Dừng</button>
+        </div>
+    </div>
+
+    <div class="script-area">
+        <div id="script-display" class="script-content">
+            <p style="text-align: center; color: #888; margin-top: 50px;">Vui lòng chọn Unit từ danh sách bên trái.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- DATABASE: VERBATIM CONTENT FROM PDF ---
+    // Includes FULL Culture/CLIL sections exactly as in the book.
+    
+    const db = {
+        "Unit 6: Gender Equality": {
+            "Getting Started": [
+                {s: "Lan", e: "It's great to have another week full of activities and trips at the camp.", v: "Thật tuyệt khi có thêm một tuần đầy ắp các hoạt động và chuyến đi tại trại hè."},
+                {s: "Mark", e: "Oh, yeah. I like the trip to the kindergarten most. The kids were adorable and the teachers were great. I think I'll be a kindergarten teacher.", v: "Ồ, ừ. Tớ thích chuyến đi đến trường mẫu giáo nhất. Lũ trẻ thật đáng yêu và các giáo viên thì tuyệt vời. Tớ nghĩ tớ sẽ trở thành giáo viên mẫu giáo."},
+                {s: "Lan", e: "That's fantastic. My cousin works at a kindergarten and the children love being in his class. By the way, what do you want to be in the future, Linda?", v: "Thật tuyệt vời. Anh họ tớ làm việc tại một trường mẫu giáo và bọn trẻ rất thích học lớp anh ấy. Nhân tiện, cậu muốn làm gì trong tương lai hả Linda?"},
+                {s: "Linda", e: "Oh, I've always wanted to be a surgeon, so I'll go to medical school. What about you, Lan?", v: "Ồ, tớ luôn muốn trở thành bác sĩ phẫu thuật, vì vậy tớ sẽ thi vào trường y. Còn cậu thì sao, Lan?"},
+                {s: "Lan", e: "Me? My dream is to become an airline pilot. That's why I'm focusing on maths and physics, and exercising more to improve my fitness.", v: "Tớ á? Ước mơ của tớ là trở thành phi công hàng không. Đó là lý do tại sao tớ đang tập trung vào toán và lý, và tập thể dục nhiều hơn để nâng cao thể lực."},
+                {s: "Linda", e: "Cool! I hope your dream will come true. In some countries girls may not be allowed to be pilots.", v: "Tuyệt quá! Tớ hy vọng giấc mơ của cậu sẽ thành hiện thực. Ở một số nước, con gái có thể không được phép làm phi công."},
+                {s: "Lan", e: "That's true, Linda. We're lucky to live in a country where boys and girls are encouraged to do the jobs they want.", v: "Đúng vậy, Linda. Chúng ta may mắn được sống ở một đất nước nơi cả nam và nữ đều được khuyến khích làm những công việc mình muốn."},
+                {s: "Mark", e: "I couldn't agree more. Girls mustn't be kept home in today's world. Boys and girls should be treated equally and given the same job opportunities.", v: "Tớ hoàn toàn đồng ý. Trong thế giới ngày nay, con gái không nên bị giữ ở nhà. Con trai và con gái nên được đối xử bình đẳng và được trao cơ hội việc làm như nhau."}
+            ],
+            "Reading": [
+                {s: "Narrator", e: "Gender equality has been greatly promoted around the world. However, there are still many challenges that women face.", v: "Bình đẳng giới đã được thúc đẩy mạnh mẽ trên toàn thế giới. Tuy nhiên, vẫn còn nhiều thách thức mà phụ nữ phải đối mặt."},
+                {s: "Narrator", e: "First of all, there are still girls who are forced to get married before the age of 18. In many places, parents may see child marriage as a way to protect their daughters from violence.", v: "Trước hết, vẫn còn những bé gái bị ép kết hôn trước 18 tuổi. Ở nhiều nơi, cha mẹ có thể coi tảo hôn là cách để bảo vệ con gái mình khỏi bạo lực."},
+                {s: "Narrator", e: "However, many of these young girls become victims of domestic violence. Child marriage also carries serious health risks as young girls are not physically developed to give birth.", v: "Tuy nhiên, nhiều cô gái trẻ trong số này trở thành nạn nhân của bạo lực gia đình. Tảo hôn cũng mang lại những rủi ro sức khỏe nghiêm trọng vì các cô gái trẻ chưa phát triển hoàn thiện về thể chất để sinh con."},
+                {s: "Narrator", e: "Secondly, more than half of the world's uneducated people are women. This means fewer girls than boys go to school or stay long at school.", v: "Thứ hai, hơn một nửa số người thất học trên thế giới là phụ nữ. Điều này có nghĩa là số lượng bé gái đến trường hoặc học lên cao ít hơn so với bé trai."},
+                {s: "Narrator", e: "Girls who receive an education are less likely to marry young. They can also have better job skills and can earn higher salaries. Education gives girls the opportunity to have a better life and give back to their communities.", v: "Những cô gái được đi học ít có khả năng kết hôn sớm hơn. Họ cũng có thể có kỹ năng làm việc tốt hơn và kiếm được mức lương cao hơn. Giáo dục mang lại cho các cô gái cơ hội có cuộc sống tốt đẹp hơn và cống hiến cho cộng đồng của họ."},
+                {s: "Narrator", e: "Thirdly, women are often paid less than men. In other words, women have to work longer than men to earn the same amount of money. Differences in career choices might be one reason.", v: "Thứ ba, phụ nữ thường được trả lương thấp hơn nam giới. Nói cách khác, phụ nữ phải làm việc nhiều thời gian hơn nam giới để kiếm được số tiền tương đương. Sự khác biệt trong lựa chọn nghề nghiệp có thể là một lý do."},
+                {s: "Narrator", e: "Women tend to become nurses, secretaries, or shop assistants, which are low-paying jobs, while men choose high-paying careers as surgeons, airline pilots, or engineers.", v: "Phụ nữ có xu hướng trở thành y tá, thư ký hoặc nhân viên bán hàng, những công việc được trả lương thấp, trong khi nam giới chọn những nghề được trả lương cao như bác sĩ phẫu thuật, phi công hàng không hoặc kỹ sư."},
+                {s: "Narrator", e: "Women are still not equal to men in today's society, and governments, organisations and individuals must work together to achieve gender equality.", v: "Phụ nữ vẫn chưa bình đẳng với nam giới trong xã hội ngày nay, và chính phủ, các tổ chức và cá nhân phải làm việc cùng nhau để đạt được bình đẳng giới."}
+            ],
+            "CLIL (Women's Football)": [
+                {s: "Narrator", e: "It is commonly thought that football is a sport for men. In fact, it is a sport for women, too.", v: "Người ta thường nghĩ rằng bóng đá là môn thể thao dành cho nam giới. Thực tế, đó cũng là môn thể thao dành cho phụ nữ."},
+                {s: "Narrator", e: "The first recorded football matches between women took place in 1890s in Scotland and England.", v: "Các trận bóng đá đầu tiên được ghi nhận giữa phụ nữ diễn ra vào những năm 1890 ở Scotland và Anh."},
+                {s: "Narrator", e: "Women's football became very popular during the First World War when women started working in the factories.", v: "Bóng đá nữ trở nên rất phổ biến trong Thế chiến thứ nhất khi phụ nữ bắt đầu làm việc trong các nhà máy."},
+                {s: "Narrator", e: "In 1921, however, the Football Association (FA) decided that the game was not suitable for women. The ban lasted for 50 years until it was finally lifted in 1971.", v: "Tuy nhiên, vào năm 1921, Hiệp hội Bóng đá (FA) đã quyết định rằng trò chơi này không phù hợp với phụ nữ. Lệnh cấm kéo dài 50 năm cho đến khi nó được dỡ bỏ vào năm 1971."},
+                {s: "Narrator", e: "In the same year, France and the Netherlands played the first official women's international football match.", v: "Cùng năm đó, Pháp và Hà Lan đã chơi trận bóng đá quốc tế nữ chính thức đầu tiên."},
+                {s: "Narrator", e: "However, it took 20 years for the first FIFA Women's World Cup to happen in 1991 in Asia. Since then, the competition has been held every four years.", v: "Tuy nhiên, phải mất 20 năm để Giải vô địch bóng đá nữ thế giới đầu tiên của FIFA diễn ra vào năm 1991 tại châu Á. Kể từ đó, cuộc thi được tổ chức bốn năm một lần."},
+                {s: "Narrator", e: "Nowadays, like men's football, women's football is becoming more and more popular.", v: "Ngày nay, giống như bóng đá nam, bóng đá nữ ngày càng trở nên phổ biến."},
+                {s: "Narrator", e: "Women's professional football has developed significantly and the Women's World Cup has drawn worldwide interests.", v: "Bóng đá nữ chuyên nghiệp đã phát triển đáng kể và World Cup nữ đã thu hút sự quan tâm trên toàn thế giới."}
+            ]
+        },
+        "Unit 7: Int. Organisations": {
+            "Getting Started": [
+                {s: "Narrator (A)", e: "The United Nations (UN) was created in 1945. It is an organisation of most of the world's countries. Its main goal is world peace. It also works to reduce poverty and improve people's lives in other ways.", v: "Liên Hợp Quốc (UN) được thành lập năm 1945. Đây là tổ chức của hầu hết các quốc gia trên thế giới. Mục tiêu chính là hòa bình thế giới. Nó cũng hoạt động để giảm nghèo và cải thiện cuộc sống của con người theo những cách khác."},
+                {s: "Narrator (A)", e: "Viet Nam joined the organisation in 1977. Since then, our country has become more active and has participated in many UN activities including peacekeeping.", v: "Việt Nam gia nhập tổ chức vào năm 1977. Kể từ đó, nước ta đã trở nên tích cực hơn và tham gia vào nhiều hoạt động của LHQ bao gồm gìn giữ hòa bình."},
+                {s: "Narrator (B)", e: "UNICEF was formed in 1946. It works in over 190 countries to help improve health and education of children. It particularly aims to support the most disadvantaged children all over the world.", v: "UNICEF được thành lập năm 1946. Tổ chức này hoạt động tại hơn 190 quốc gia để giúp cải thiện sức khỏe và giáo dục cho trẻ em. Nó đặc biệt hướng tới việc hỗ trợ những trẻ em thiệt thòi nhất trên toàn thế giới."},
+                {s: "Narrator (B)", e: "UNICEF's aim in Viet Nam is to protect children and make sure they are healthy, educated and safe from harm.", v: "Mục tiêu của UNICEF tại Việt Nam là bảo vệ trẻ em và đảm bảo chúng được khỏe mạnh, được giáo dục và an toàn khỏi bị tổn hại."},
+                {s: "Narrator (C)", e: "UNDP was formed in 1965 as part of the UN. It provides technical support, expert advice and training to help people in developing countries have a better life.", v: "UNDP được thành lập năm 1965 như một phần của LHQ. Tổ chức cung cấp hỗ trợ kỹ thuật, tư vấn chuyên môn và đào tạo để giúp người dân ở các nước đang phát triển có cuộc sống tốt đẹp hơn."},
+                {s: "Narrator (C)", e: "In Viet Nam, UNDP works closely with the government to reduce poverty and improve people's lives.", v: "Tại Việt Nam, UNDP hợp tác chặt chẽ với chính phủ để giảm nghèo và cải thiện đời sống người dân."},
+                {s: "Narrator (D)", e: "The WTO was formed in 1995. It is the world's largest international economic organisation. Viet Nam became a WTO member in 2007. Since then, our economy has achieved a high growth level.", v: "WTO được thành lập năm 1995. Đây là tổ chức kinh tế quốc tế lớn nhất thế giới. Việt Nam trở thành thành viên WTO năm 2007. Kể từ đó, nền kinh tế của chúng ta đã đạt được mức tăng trưởng cao."}
+            ],
+            "Reading": [
+                {s: "Narrator", e: "Since UNICEF set up an office in 1975 in Viet Nam, it has run projects in various fields to provide the highest possible support for children in our country.", v: "Kể từ khi UNICEF mở văn phòng tại Việt Nam năm 1975, tổ chức này đã điều hành các dự án trong nhiều lĩnh vực khác nhau nhằm hỗ trợ tối đa cho trẻ em nước ta."},
+                {s: "Narrator", e: "The organisation particularly aims to create opportunities for all children in Viet Nam to attend school, learn and succeed.", v: "Tổ chức đặc biệt hướng tới việc tạo cơ hội cho tất cả trẻ em ở Việt Nam được đến trường, học tập và thành công."},
+                {s: "Narrator", e: "UNICEF helps disadvantaged teenagers continue their education by offering them job training and career advice. They are also taught essential skills for the job market.", v: "UNICEF giúp thanh thiếu niên có hoàn cảnh khó khăn tiếp tục con đường học vấn bằng cách cung cấp đào tạo nghề và tư vấn hướng nghiệp. Họ cũng được dạy các kỹ năng thiết yếu cho thị trường lao động."},
+                {s: "Narrator", e: "This programme gives children with disabilities a chance to get access to and benefit from a quality education. It also helps promote equal participation in society and a culture in which people respect each other.", v: "Chương trình này mang lại cho trẻ khuyết tật cơ hội tiếp cận và thụ hưởng một nền giáo dục chất lượng. Nó cũng giúp thúc đẩy sự tham gia bình đẳng trong xã hội."},
+                {s: "Narrator", e: "This is another practical programme supported by UNICEF. The aim is to better prepare children for the challenges in the future.", v: "Đây là một chương trình thiết thực khác được UNICEF hỗ trợ. Mục đích là chuẩn bị tốt hơn cho trẻ em trước những thách thức trong tương lai."},
+                {s: "Narrator", e: "UNICEF helps Viet Nam in joining regional educational programmes to improve children's learning achievements.", v: "UNICEF hỗ trợ Việt Nam tham gia các chương trình giáo dục khu vực nhằm nâng cao thành tích học tập của trẻ em."},
+                {s: "Narrator", e: "When they leave school, they should have the necessary skills and knowledge to work in a fast-changing world.", v: "Khi rời ghế nhà trường, các em cần có những kỹ năng và kiến thức cần thiết để làm việc trong một thế giới thay đổi nhanh chóng."}
+            ],
+            "Culture (FAO)": [
+                {s: "Narrator", e: "The Food and Agriculture Organisation (FAO) of the United Nations was formed in 1945.", v: "Tổ chức Lương thực và Nông nghiệp (FAO) của Liên Hợp Quốc được thành lập năm 1945."},
+                {s: "Narrator", e: "Its main aim is to end hunger and poverty by making sure all people have access to healthy food.", v: "Mục tiêu chính của nó là chấm dứt nạn đói và nghèo bằng cách đảm bảo tất cả mọi người đều được tiếp cận với thực phẩm lành mạnh."},
+                {s: "Narrator", e: "It hopes to raise the levels of nutrition and the standard of living in its member countries.", v: "Tổ chức hy vọng sẽ nâng cao mức độ dinh dưỡng và mức sống ở các quốc gia thành viên."},
+                {s: "Narrator", e: "It also tries to improve the production of food and agricultural products, and make sure they reach all groups of society.", v: "Nó cũng cố gắng cải thiện việc sản xuất lương thực và các sản phẩm nông nghiệp, đồng thời đảm bảo chúng đến được với tất cả các nhóm trong xã hội."},
+                {s: "Narrator", e: "FAO started working in Viet Nam in 1978. Since then, it has provided Viet Nam with technical support and advice to the government in the field of agriculture.", v: "FAO bắt đầu làm việc tại Việt Nam vào năm 1978. Kể từ đó, tổ chức đã cung cấp cho Việt Nam hỗ trợ kỹ thuật và tư vấn cho chính phủ trong lĩnh vực nông nghiệp."},
+                {s: "Narrator", e: "It has also helped Viet Nam carry out hundreds of projects in different areas.", v: "Tổ chức cũng đã giúp Việt Nam thực hiện hàng trăm dự án trong các lĩnh vực khác nhau."},
+                {s: "Narrator", e: "In response to FAO's support, Viet Nam has actively participated in FAO activities, including food security and nutrition.", v: "Để đáp lại sự hỗ trợ của FAO, Việt Nam đã tích cực tham gia các hoạt động của FAO, bao gồm an ninh lương thực và dinh dưỡng."},
+                {s: "Narrator", e: "Food security means that all people have access to enough and safe food while good nutrition or getting the right type of food is essential for normal growth and development.", v: "An ninh lương thực có nghĩa là mọi người đều được tiếp cận với nguồn lương thực đủ và an toàn, trong khi dinh dưỡng tốt hoặc nhận được đúng loại thực phẩm là điều cần thiết cho sự tăng trưởng và phát triển bình thường."}
+            ]
+        },
+        "Unit 8: New Ways to Learn": {
+            "Getting Started": [
+                {s: "Long", e: "Hi, Nick. What are you doing?", v: "Chào Nick. Cậu đang làm gì đấy?"},
+                {s: "Nick", e: "I'm watching the video that my geography teacher uploaded on Eclass. It's about global warming.", v: "Tớ đang xem video mà giáo viên địa lý đã tải lên Eclass. Nó nói về sự nóng lên toàn cầu."},
+                {s: "Long", e: "Really? What is it about?", v: "Thật à? Nó nói về cái gì?"},
+                {s: "Nick", e: "My teacher asked us to watch the video and find more information about this topic.", v: "Giáo viên yêu cầu bọn tớ xem video và tìm thêm thông tin về chủ đề này."},
+                {s: "Long", e: "So, is watching the video part of your homework?", v: "Vậy, xem video là một phần bài tập về nhà à?"},
+                {s: "Nick", e: "Yes, then next week, we'll work in groups and discuss the topic in class.", v: "Ừ, rồi tuần sau bọn tớ sẽ làm việc nhóm và thảo luận chủ đề này trên lớp."},
+                {s: "Long", e: "Sounds interesting. You can watch the video many times and also search for more information at home.", v: "Nghe thú vị đấy. Cậu có thể xem video nhiều lần và tìm kiếm thêm thông tin tại nhà."},
+                {s: "Nick", e: "You're right. I'm not good at taking notes in class, you know. So I prefer this way of learning. It gives me a chance to discuss with my classmates, who may have original ideas on the topic.", v: "Cậu nói đúng. Cậu biết đấy, tớ không giỏi ghi chép trên lớp. Nên tớ thích cách học này hơn. Nó cho tớ cơ hội thảo luận với các bạn cùng lớp, những người có thể có ý tưởng độc đáo về chủ đề này."},
+                {s: "Long", e: "Does your teacher often ask you to prepare materials at home and discuss in class, Nick?", v: "Giáo viên của cậu có thường yêu cầu chuẩn bị tài liệu ở nhà và thảo luận trên lớp không, Nick?"},
+                {s: "Nick", e: "Yes, she does. We're doing a lot of projects that help us understand the lessons better. This way of studying, which gives us more control over our own learning, is quite useful.", v: "Có. Bọn tớ đang làm rất nhiều dự án giúp hiểu bài học tốt hơn. Cách học này, cho phép bọn tớ kiểm soát việc học của chính mình, khá là hữu ích."},
+                {s: "Long", e: "You're lucky. My teachers use very traditional methods of teaching at my school. I wish I could try these new learning activities.", v: "Cậu may mắn thật. Ở trường tớ giáo viên dùng phương pháp dạy rất truyền thống. Ước gì tớ được thử những hoạt động học tập mới này."}
+            ],
+            "Reading": [
+                {s: "Kim", e: "I think face-to-face learning is better than online learning because I can communicate with teachers and other classmates immediately and directly when I have questions.", v: "Tớ nghĩ học trực tiếp tốt hơn học trực tuyến vì tớ có thể giao tiếp với giáo viên và các bạn cùng lớp ngay lập tức và trực tiếp khi tớ có câu hỏi."},
+                {s: "Kim", e: "In class, I can work in groups and discuss with friends. This helps me understand the lessons better.", v: "Trong lớp, tớ có thể làm việc nhóm và thảo luận với bạn bè. Điều này giúp tớ hiểu bài học tốt hơn."},
+                {s: "Kim", e: "When I have a problem, I can ask for answers or help immediately. I can't do this in online classes. I have to email my teachers and wait for their reply.", v: "Khi tớ gặp vấn đề, tớ có thể hỏi đáp án hoặc sự giúp đỡ ngay lập tức. Tớ không thể làm điều này trong các lớp học trực tuyến. Tớ phải gửi email cho giáo viên và chờ họ trả lời."},
+                {s: "Kim", e: "Learning in a traditional classroom also has fewer distractions than learning online. My teachers have many strategies to keep us focused on the lessons. I really enjoy my lessons and learn a lot.", v: "Học trong lớp học truyền thống cũng ít bị xao nhãng hơn so với học trực tuyến. Giáo viên của tớ có nhiều chiến lược để giữ cho bọn tớ tập trung vào bài học. Tớ thực sự thích các bài học và học được rất nhiều."},
+                {s: "Laura", e: "I think online learning has more advantages than disadvantages. My school is trying to change from face-to-face to blended learning, so sometimes we have online classes.", v: "Tớ nghĩ học trực tuyến có nhiều ưu điểm hơn nhược điểm. Trường tớ đang cố gắng chuyển từ học trực tiếp sang học kết hợp, nên đôi khi bọn tớ có các lớp học trực tuyến."},
+                {s: "Laura", e: "I don't have to go to school, but I don't feel I'm missing any lessons by taking online classes. Furthermore, I think I learn online as much as I learn in a traditional class.", v: "Tớ không phải đến trường nhưng tớ không cảm thấy mình bỏ lỡ bài học nào khi tham gia các lớp học trực tuyến. Hơn nữa, tớ nghĩ tớ học trực tuyến cũng nhiều như học trong lớp học truyền thống."},
+                {s: "Laura", e: "I can't talk to my teacher and classmates, but I can email them at any time. I also have an online discussion board where I can exchange comments and ideas about my projects with my classmates.", v: "Tớ không thể nói chuyện với giáo viên và bạn cùng lớp, nhưng tớ có thể gửi email cho họ bất cứ lúc nào. Tớ cũng có một bảng thảo luận trực tuyến nơi tớ có thể trao đổi ý kiến và ý tưởng về các dự án của mình với các bạn cùng lớp."},
+                {s: "Laura", e: "The only disadvantage is I really need to have a fast Internet connection.", v: "Nhược điểm duy nhất là tớ thực sự cần có kết nối Internet nhanh."}
+            ],
+            "Culture (Modern Schools)": [
+                {s: "Narrator", e: "Modern schools are designed to help each student to be successful. Teachers play the role of a guide for them and prepare them for lifelong learning.", v: "Các trường học hiện đại được thiết kế để giúp mỗi học sinh thành công. Giáo viên đóng vai trò là người hướng dẫn và chuẩn bị cho các em học tập suốt đời."},
+                {s: "Narrator", e: "They encourage and challenge them to become responsible and confident individuals.", v: "Họ khuyến khích và thử thách các em trở thành những cá nhân có trách nhiệm và tự tin."},
+                {s: "Narrator", e: "Class discussion is a main feature of modern schools. Students are expected to take part in discussions and express personal opinions.", v: "Thảo luận trên lớp là một đặc điểm chính của các trường học hiện đại. Học sinh được mong đợi sẽ tham gia thảo luận và bày tỏ quan điểm cá nhân."},
+                {s: "Narrator", e: "It is also important to ask questions in class if students do not understand any point or instruction.", v: "Việc đặt câu hỏi trong lớp nếu học sinh không hiểu bất kỳ điểm hoặc hướng dẫn nào cũng rất quan trọng."},
+                {s: "Narrator", e: "Group learning is another common feature. Students may work in small groups on a project task.", v: "Học tập theo nhóm là một đặc điểm phổ biến khác. Học sinh có thể làm việc theo nhóm nhỏ trong một nhiệm vụ dự án."},
+                {s: "Narrator", e: "In class, teachers and students use computers to access digital learning resources. Teachers use technology and audio-visual materials to support their lessons.", v: "Trong lớp, giáo viên và học sinh sử dụng máy tính để truy cập các nguồn học liệu kỹ thuật số. Giáo viên sử dụng công nghệ và các tài liệu nghe nhìn để hỗ trợ bài giảng."},
+                {s: "Narrator", e: "Outside the classroom, students have a chance to participate in field trips to famous landmarks such as museums, hospitals, and industry locations.", v: "Bên ngoài lớp học, học sinh có cơ hội tham gia các chuyến đi thực tế đến các địa danh nổi tiếng như bảo tàng, bệnh viện và các địa điểm công nghiệp."},
+                {s: "Narrator", e: "These trips give them real-world experiences. Students also attend school camps to make friends with other students and to develop life skills in unfamiliar environments.", v: "Những chuyến đi này mang lại cho các em trải nghiệm thực tế. Học sinh cũng tham gia các buổi cắm trại của trường để kết bạn với các học sinh khác và phát triển kỹ năng sống trong môi trường xa lạ."}
+            ]
+        },
+        "Unit 9: Protecting the Environment": {
+            "Getting Started": [
+                {s: "Nam's father", e: "What are you doing, Nam?", v: "Con đang làm gì vậy Nam?"},
+                {s: "Nam", e: "I'm preparing a presentation for my geography class.", v: "Con đang chuẩn bị một bài thuyết trình cho lớp địa lý ạ."},
+                {s: "Nam's father", e: "What's the topic?", v: "Chủ đề là gì vậy?"},
+                {s: "Nam", e: "It's environmental protection. My teacher asked me to do some research, but I don't know where to start.", v: "Là bảo vệ môi trường ạ. Cô giáo yêu cầu con nghiên cứu, nhưng con chưa biết bắt đầu từ đâu."},
+                {s: "Nam's father", e: "I think you should identify some environmental problems first. What have you found so far?", v: "Bố nghĩ con nên xác định một số vấn đề môi trường trước. Con đã tìm được gì rồi?"},
+                {s: "Nam", e: "I've come up with a range of environmental issues such as global warming, deforestation, endangered animals and pollution, but I don't know how to organise them.", v: "Con đã liệt kê được một loạt vấn đề như nóng lên toàn cầu, phá rừng, động vật bị đe dọa và ô nhiễm, nhưng con chưa biết sắp xếp thế nào."},
+                {s: "Nam's father", e: "You should focus on each problem, explain the main causes of it, and then suggest the solutions.", v: "Con nên tập trung vào từng vấn đề, giải thích nguyên nhân chính, và sau đó đề xuất giải pháp."},
+                {s: "Nam", e: "Thanks, Dad. But presenting all the solutions will be hard.", v: "Cảm ơn bố. Nhưng trình bày tất cả các giải pháp sẽ khó lắm ạ."},
+                {s: "Nam's father", e: "Have you asked your teacher for advice?", v: "Con đã hỏi xin lời khuyên của cô giáo chưa?"},
+                {s: "Nam", e: "Yes, I have. She advised me to start with small, practical actions to protect the environment before coming up with big ideas that need a lot of effort or money to succeed.", v: "Rồi ạ. Cô khuyên con nên bắt đầu bằng những hành động nhỏ, thiết thực để bảo vệ môi trường trước khi đưa ra những ý tưởng lớn cần nhiều nỗ lực hoặc tiền bạc để thành công."},
+                {s: "Nam's father", e: "Sounds good. You'd better follow her advice. When did she ask you to present it?", v: "Nghe hay đấy. Tốt hơn là con nên làm theo lời khuyên của cô. Khi nào cô yêu cầu con trình bày?"},
+                {s: "Nam", e: "She said I should present it the following week.", v: "Cô bảo con nên trình bày vào tuần sau."},
+                {s: "Nam's father", e: "You still have a lot of time. Good luck!", v: "Con vẫn còn nhiều thời gian mà. Chúc may mắn!"},
+                {s: "Nam", e: "Thanks, Dad.", v: "Cảm ơn bố."}
+            ],
+            "Reading": [
+                {s: "Narrator", e: "The environment we live in is facing many serious problems. We need to be aware of these problems so that we can find ways to protect nature.", v: "Môi trường chúng ta đang sống đang phải đối mặt với nhiều vấn đề nghiêm trọng. Chúng ta cần nhận thức được những vấn đề này để có thể tìm ra cách bảo vệ thiên nhiên."},
+                {s: "Narrator", e: "Global warming is the rise in the average temperature of the earth's atmosphere. It is one of the biggest issues facing humans today.", v: "Sự nóng lên toàn cầu là sự gia tăng nhiệt độ trung bình của bầu khí quyển trái đất. Đây là một trong những vấn đề lớn nhất mà con người phải đối mặt hiện nay."},
+                {s: "Narrator", e: "It can have serious consequences such as rising sea levels, polar ice melting and extreme weather events like floods or heatwaves.", v: "Nó có thể gây ra những hậu quả nghiêm trọng như mực nước biển dâng cao, băng tan ở các cực và các hiện tượng thời tiết cực đoan như lũ lụt hoặc sóng nhiệt."},
+                {s: "Narrator", e: "Another environmental problem is the cutting and clearing of natural forests. The loss of forests can have a negative impact on the environment.", v: "Một vấn đề môi trường khác là việc chặt phá và khai quang các khu rừng tự nhiên. Việc mất rừng có thể gây tác động tiêu cực đến môi trường."},
+                {s: "Narrator", e: "It can damage the natural habitats of many animals and put wildlife in danger. It can also destroy the natural soil and lead to climate change.", v: "Nó có thể phá hủy môi trường sống tự nhiên của nhiều loài động vật và đe dọa động vật hoang dã. Nó cũng có thể phá hủy đất tự nhiên và dẫn đến biến đổi khí hậu."},
+                {s: "Narrator", e: "Air pollution is also a serious problem. It is mainly caused by waste gases that come out of vehicles, machines or factories.", v: "Ô nhiễm không khí cũng là một vấn đề nghiêm trọng. Nó chủ yếu do khí thải từ các phương tiện giao thông, máy móc hoặc nhà máy."},
+                {s: "Narrator", e: "When these harmful gases combine with the water in the air, they come down as rain or snow, which can damage all forms of life.", v: "Khi những khí độc hại này kết hợp với nước trong không khí, chúng rơi xuống dưới dạng mưa hoặc tuyết, có thể gây hại cho mọi dạng sống."},
+                {s: "Narrator", e: "In addition, this problem leads to global warming and climate change. It is also a major cause of respiratory diseases or even lung cancer.", v: "Ngoài ra, vấn đề này dẫn đến sự nóng lên toàn cầu và biến đổi khí hậu. Nó cũng là một nguyên nhân chính gây ra các bệnh hô hấp hoặc thậm chí ung thư phổi."},
+                {s: "Narrator", e: "Around the world, the number of endangered animals is rising. Many of them disappear because of pollution and climate change.", v: "Trên khắp thế giới, số lượng động vật có nguy cơ tuyệt chủng đang gia tăng. Nhiều loài biến mất do ô nhiễm và biến đổi khí hậu."},
+                {s: "Narrator", e: "In addition, humans illegally hunt and kill animals, and catch too many fish at once. This is upsetting the natural balance of ecosystems, which can be harmful to all living and non-living things.", v: "Ngoài ra, con người săn bắt và giết hại trái phép động vật, và đánh bắt quá nhiều cá cùng một lúc. Điều này đang làm đảo lộn sự cân bằng tự nhiên của các hệ sinh thái, có thể gây hại cho tất cả các sinh vật sống và không sống."}
+            ],
+            "CLIL (Earth Hour)": [
+                {s: "Narrator", e: "Earth Hour is a global event organised by the World Wide Fund for Nature (WWF). Held every year, it encourages people and businesses to turn off their lights and other unnecessary electrical devices for one hour from 8:30 p.m. to 9:30 p.m. on the last Saturday of March.", v: "Giờ Trái đất là một sự kiện toàn cầu do Tổ chức Quốc tế về Bảo tồn Thiên nhiên (WWF) tổ chức. Được tổ chức hàng năm, sự kiện khuyến khích người dân và doanh nghiệp tắt đèn và các thiết bị điện không cần thiết trong một giờ từ 8:30 tối đến 9:30 tối vào thứ Bảy cuối cùng của tháng Ba."},
+                {s: "Narrator", e: "Earth Hour was started as a lights-out event in Sydney, Australia, in 2007. Since then, it has grown to become an international movement for the environment, happening in more than 7,000 cities and towns across 187 countries and territories.", v: "Giờ Trái đất được bắt đầu như một sự kiện tắt đèn ở Sydney, Úc, vào năm 2007. Kể từ đó, nó đã phát triển thành một phong trào quốc tế vì môi trường, diễn ra tại hơn 7.000 thành phố và thị trấn trên khắp 187 quốc gia và vùng lãnh thổ."},
+                {s: "Narrator", e: "Earth Hour has created a positive environmental impact. It shows the public support for protecting the environment and saving the planet.", v: "Giờ Trái đất đã tạo ra tác động tích cực đến môi trường. Nó cho thấy sự ủng hộ của công chúng đối với việc bảo vệ môi trường và cứu lấy hành tinh."},
+                {s: "Narrator", e: "It also draws attention to climate change and global energy issues, and promotes green activities worldwide.", v: "Nó cũng thu hút sự chú ý đến biến đổi khí hậu và các vấn đề năng lượng toàn cầu, đồng thời thúc đẩy các hoạt động xanh trên toàn thế giới."},
+                {s: "Narrator", e: "Viet Nam joined the event in 2009 and has been an active and keen supporter since then. Everyone can take part in a number of activities to raise awareness of environmental problems and call for action for climate, people and nature.", v: "Việt Nam tham gia sự kiện này vào năm 2009 và là một người ủng hộ tích cực và nhiệt tình kể từ đó. Mọi người đều có thể tham gia vào một số hoạt động để nâng cao nhận thức về các vấn đề môi trường và kêu gọi hành động vì khí hậu, con người và thiên nhiên."}
+            ]
+        },
+        "Unit 10: Ecotourism": {
+            "Getting Started": [
+                {s: "Ms Hoa", e: "Listen, everyone! This year, we're going on a fieldtrip to Phong Nha Cave, a tourist attraction in Quang Binh Province.", v: "Các em trật tự nào! Năm nay, chúng ta sẽ đi thực tế đến Động Phong Nha, một điểm du lịch ở tỉnh Quảng Bình."},
+                {s: "Class", e: "Hooray!", v: "Hoan hô!"},
+                {s: "Nam", e: "I hope I can find some small pieces of stalactites. If I add some to my rock collection, it will be the best at school.", v: "Em hy vọng em có thể tìm được vài mảnh thạch nhũ nhỏ. Nếu em thêm chúng vào bộ sưu tập đá của mình, nó sẽ là bộ sưu tập tuyệt nhất trường."},
+                {s: "Mai", e: "I'll buy a lot of snacks to share. We'll have fun!", v: "Tớ sẽ mua thật nhiều đồ ăn vặt để chia sẻ. Chúng ta sẽ rất vui!"},
+                {s: "Ms Hoa", e: "We will have fun, but in a different way. This time, the fieldtrip is going to be eco-friendly.", v: "Chúng ta sẽ vui, nhưng theo một cách khác. Lần này, chuyến thực tế sẽ thân thiện với môi trường."},
+                {s: "Nam", e: "Ms Hoa, what's an eco-friendly fieldtrip?", v: "Cô Hoa ơi, chuyến đi thực tế thân thiện với môi trường là gì ạ?"},
+                {s: "Ms Hoa", e: "Going on an eco-friendly fieldtrip means we'll enjoy, explore and learn about the place, but in a way that will not damage it. So, Nam, I'm afraid you can't take any stalactites because it takes hundreds or sometimes thousands of years for them to form.", v: "Đi thực tế thân thiện với môi trường nghĩa là chúng ta sẽ tận hưởng, khám phá và tìm hiểu về địa điểm đó, nhưng theo cách không làm hại đến nó. Vì vậy, Nam à, cô e là em không thể lấy bất kỳ mảnh thạch nhũ nào vì phải mất hàng trăm hoặc đôi khi hàng ngàn năm để chúng hình thành."},
+                {s: "Nam", e: "Wow! I didn't know that. I won't even touch them, I promise.", v: "Ồ! Em không biết điều đó. Em hứa sẽ thậm chí không chạm vào chúng."},
+                {s: "Mai", e: "But can we bring snacks?", v: "Nhưng chúng em có thể mang đồ ăn vặt không ạ?"},
+                {s: "Ms Hoa", e: "Yes, but if I were you, I wouldn't bring too many snacks. We don't want to leave litter behind and damage the environment.", v: "Được, nhưng nếu cô là em, cô sẽ không mang quá nhiều đồ ăn vặt. Chúng ta không muốn xả rác bừa bãi và làm hại môi trường."},
+                {s: "Mai", e: "I agree. I'll also try to bring snacks with less packaging.", v: "Em đồng ý. Em cũng sẽ cố gắng mang đồ ăn vặt ít bao bì hơn."},
+                {s: "Ms Hoa", e: "That's a good idea. Let's hope our fieldtrip will be a fun educational experience for everyone.", v: "Ý kiến hay đấy. Hãy hy vọng chuyến thực tế của chúng ta sẽ là một trải nghiệm giáo dục vui vẻ cho tất cả mọi người."}
+            ],
+            "Reading": [
+                {s: "Brochure 1", e: "GREAT BARRIER REEF TOUR, AUSTRALIA. Dive with us to explore the most beautiful coral reef in the world. Swim in deep blue sea with colourful fish. Watch 3D documentaries to learn about sea animals and the coral reef, and what you can do to protect it.", v: "TOUR RẠN SAN HÔ GREAT BARRIER, ÚC. Lặn cùng chúng tôi để khám phá rạn san hô đẹp nhất thế giới. Bơi trong làn nước biển xanh thẳm với những loài cá đầy màu sắc. Xem phim tài liệu 3D để tìm hiểu về các loài động vật biển và rạn san hô, và những gì bạn có thể làm để bảo vệ nó."},
+                {s: "Brochure 2", e: "SAPA TREKKING TOUR, VIET NAM. A three-day walk of 20 kilometres a day through the mountains in the north of Viet Nam. Enjoy some of the country's most beautiful scenery. Stay with local people to learn about their culture and enjoy local food.", v: "TOUR ĐI BỘ SAPA, VIỆT NAM. Chuyến đi bộ ba ngày, mỗi ngày 20 km qua những ngọn núi ở phía bắc Việt Nam. Tận hưởng một số cảnh đẹp nhất của đất nước. Ở cùng người dân địa phương để tìm hiểu về văn hóa của họ và thưởng thức món ăn địa phương."},
+                {s: "Brochure 3", e: "NATIONAL PARK TOUR, ZIMBABWE. Explore Zimbabwe's national park in an open-top jeep. See some amazing African animals (hippos, giraffes, elephants, lions and more) up-close. Learn how you can help save wild animals in the local research centre.", v: "TOUR CÔNG VIÊN QUỐC GIA, ZIMBABWE. Khám phá công viên quốc gia của Zimbabwe trên xe jeep mui trần. Ngắm nhìn cận cảnh một số loài động vật châu Phi tuyệt vời (hà mã, hươu cao cổ, voi, sư tử và nhiều loài khác). Tìm hiểu cách bạn có thể giúp cứu các loài động vật hoang dã tại trung tâm nghiên cứu địa phương."},
+                {s: "Brochure 4", e: "WHALE-WATCHING TOUR, HAWAII. Watch the most beautiful and friendly animals on earth from our high-speed boats. See them dance and jump out of the water to greet you. Buy local souvenirs to help the local Whale Protection Program.", v: "TOUR NGẮM CÁ VOI, HAWAII. Ngắm nhìn những loài động vật đẹp và thân thiện nhất trên trái đất từ những chiếc thuyền cao tốc của chúng tôi. Xem chúng nhảy múa và nhảy lên khỏi mặt nước để chào đón bạn. Mua quà lưu niệm địa phương để giúp Chương trình Bảo vệ Cá voi địa phương."}
+            ],
+            "CLIL (Tourism Impact)": [
+                {s: "Narrator", e: "Although tourism is often called 'the smokeless industry', or an environmentally-friendly industry, it can actually damage nature. However, different kinds of tourism may have different effects on the environment.", v: "Mặc dù du lịch thường được gọi là 'ngành công nghiệp không khói', hay một ngành công nghiệp thân thiện với môi trường, nó thực sự có thể gây hại cho thiên nhiên. Tuy nhiên, các loại hình du lịch khác nhau có thể có những tác động khác nhau đến môi trường."},
+                {s: "Narrator", e: "Mass tourism is a kind of tourism which involves tens of thousands of people crowding the same places at the same time of year. It often has a lot of negative impact on the local area, such as litter from tourists and pollution from traffic.", v: "Du lịch đại chúng là một loại hình du lịch bao gồm hàng chục ngàn người cùng đổ về một địa điểm vào cùng một thời điểm trong năm. Nó thường có nhiều tác động tiêu cực đến khu vực địa phương, chẳng hạn như rác thải từ khách du lịch và ô nhiễm từ giao thông."},
+                {s: "Narrator", e: "Ecotourism provides tourists with opportunities to explore nature, and at the same time helps protect the environment and educates travellers on local environmental issues. It also promotes tourists' respect for local communities.", v: "Du lịch sinh thái cung cấp cho du khách cơ hội khám phá thiên nhiên, đồng thời giúp bảo vệ môi trường và giáo dục du khách về các vấn đề môi trường địa phương. Nó cũng thúc đẩy sự tôn trọng của du khách đối với cộng đồng địa phương."},
+                {s: "Narrator", e: "Sustainable tourism involves not only environmental protection and cultural respect, but also efforts to keep profits local. It often refers to action of the industry.", v: "Du lịch bền vững không chỉ liên quan đến bảo vệ môi trường và tôn trọng văn hóa, mà còn nỗ lực giữ lợi nhuận tại địa phương. Nó thường đề cập đến hành động của ngành công nghiệp du lịch."},
+                {s: "Narrator", e: "Responsible tourism encourages tourists to be more than visitors. Responsible tourists should not only be aware of their role, but also take part in protecting the environment, culture and improving the profits for local people. Responsible tourism often relates to specific actions of individuals, businesses and communities.", v: "Du lịch có trách nhiệm khuyến khích du khách không chỉ là khách tham quan. Khách du lịch có trách nhiệm không chỉ nhận thức được vai trò của mình mà còn tham gia bảo vệ môi trường, văn hóa và cải thiện lợi nhuận cho người dân địa phương. Du lịch có trách nhiệm thường liên quan đến các hành động cụ thể của cá nhân, doanh nghiệp và cộng đồng."}
+            ]
+        },
+        "Review 3 & 4": {
+            "Review 3 (Reading)": [
+                {s: "Narrator", e: "In the Pacific Island of Fiji, a new sport programme enables both male and female school teachers to receive training as coaches. Rugby, which is often considered a male sport, is creating more opportunities for men and women in Fiji.", v: "Tại đảo quốc Fiji ở Thái Bình Dương, một chương trình thể thao mới cho phép cả giáo viên nam và nữ được đào tạo làm huấn luyện viên. Bóng bầu dục, môn thể thao thường được coi là dành cho nam giới, đang tạo ra nhiều cơ hội hơn cho cả nam và nữ ở Fiji."},
+                {s: "Narrator", e: "For Kitiana Kaitu, a primary school teacher from Nasinu, Fiji, it was an honour to become a rugby coach. She has recently qualified as a coach and life skills trainer for this sport programme.", v: "Đối với Kitiana Kaitu, một giáo viên tiểu học đến từ Nasinu, Fiji, trở thành huấn luyện viên bóng bầu dục là một vinh dự. Cô gần đây đã đủ điều kiện trở thành huấn luyện viên và người đào tạo kỹ năng sống cho chương trình thể thao này."},
+                {s: "Narrator", e: "Sport can be used as a powerful tool to reject gender roles and build a healthy lifestyle. In the Pacific region, rugby is a particularly important sport.", v: "Thể thao có thể được sử dụng như một công cụ mạnh mẽ để bác bỏ các vai trò giới tính và xây dựng lối sống lành mạnh. Ở khu vực Thái Bình Dương, bóng bầu dục là một môn thể thao đặc biệt quan trọng."},
+                {s: "Narrator", e: "Kitiana Kaitu is now one of the highly skilled coaches who are discovering new ways to encourage both girls and boys in Fiji to play rugby.", v: "Kitiana Kaitu hiện là một trong những huấn luyện viên có tay nghề cao, người đang khám phá những cách mới để khuyến khích cả bé gái và bé trai ở Fiji chơi bóng bầu dục."}
+            ],
+            "Review 4 (Reading)": [
+                {s: "Narrator", e: "The more people travel, the bigger impact they may have on the environment. How can we reduce it while travelling? Here are some advice.", v: "Càng nhiều người đi du lịch, tác động của họ đối với môi trường càng lớn. Làm thế nào chúng ta có thể giảm thiểu điều đó khi đi du lịch? Dưới đây là một số lời khuyên."},
+                {s: "Narrator", e: "Reduce your carbon footprint while travelling. Since flying produces more carbon footprint than any other means of transport, you should only fly when the trip is long.", v: "Giảm dấu chân carbon của bạn khi đi du lịch. Vì đi máy bay tạo ra nhiều dấu chân carbon hơn bất kỳ phương tiện giao thông nào khác, bạn chỉ nên bay khi chuyến đi dài."},
+                {s: "Narrator", e: "During the trip, you should walk, cycle or use public transport as much as you can. This not only helps to keep the environment clean, but also allows you to enjoy the beauty of nature and interact with local people.", v: "Trong chuyến đi, bạn nên đi bộ, đạp xe hoặc sử dụng phương tiện công cộng nhiều nhất có thể. Điều này không chỉ giúp giữ gìn môi trường trong sạch mà còn cho phép bạn tận hưởng vẻ đẹp của thiên nhiên và tương tác với người dân địa phương."},
+                {s: "Narrator", e: "Choose eco-friendly activities that benefit animals and the ecosystem. Avoid activities that allow you to touch or ride animals because they disturb their natural patterns and attract many people.", v: "Chọn các hoạt động thân thiện với môi trường mang lại lợi ích cho động vật và hệ sinh thái. Tránh các hoạt động cho phép bạn chạm vào hoặc cưỡi động vật vì chúng làm xáo trộn tập tính tự nhiên của chúng và thu hút nhiều người."},
+                {s: "Narrator", e: "Instead, visit wildlife parks or organic farms. These will help you understand and respect the nature more and stop doing things that harm the environment.", v: "Thay vào đó, hãy ghé thăm các công viên động vật hoang dã hoặc trang trại hữu cơ. Những nơi này sẽ giúp bạn hiểu và tôn trọng thiên nhiên hơn và ngừng làm những việc gây hại cho môi trường."}
+            ]
+        }
+    };
+
+    // --- LOGIC ---
+    let synth = window.speechSynthesis;
+    let currentData = null;
+    let isSpeaking = false;
+    let showTrans = true;
+
+    function initMenu() {
+        const root = document.getElementById('menu-root');
+        for (const [unit, sections] of Object.entries(db)) {
+            const block = document.createElement('div');
+            block.className = 'unit-block';
+            
+            const title = document.createElement('div');
+            title.className = 'unit-title';
+            title.innerHTML = `${unit} <span>▼</span>`;
+            
+            const list = document.createElement('div');
+            list.className = 'section-list';
+
+            title.onclick = () => {
+                const visible = list.style.display === 'block';
+                list.style.display = visible ? 'none' : 'block';
+                title.innerHTML = `${unit} <span>${visible ? '▼' : '▲'}</span>`;
+            };
+
+            for (const key in sections) {
+                const item = document.createElement('div');
+                item.className = 'section-item';
+                item.textContent = key;
+                item.onclick = (e) => loadContent(unit, key, e);
+                list.appendChild(item);
+            }
+
+            block.appendChild(title);
+            block.appendChild(list);
+            root.appendChild(block);
+        }
+    }
+
+    function loadContent(unit, key, event) {
+        document.querySelectorAll('.section-item').forEach(el => el.classList.remove('active'));
+        if(event) event.target.classList.add('active');
+
+        document.getElementById('lesson-title').textContent = unit;
+        document.getElementById('lesson-sub').textContent = key;
+
+        currentData = db[unit][key];
+        const display = document.getElementById('script-display');
+        display.innerHTML = '';
+
+        currentData.forEach((line, index) => {
+            const div = document.createElement('div');
+            div.className = 'line';
+            div.id = `line-${index}`;
+            div.onclick = () => speakLine(index);
+
+            div.innerHTML = `
+                <div class="speaker">${line.s}</div>
+                <div class="en">${line.e}</div>
+                <div class="vi ${showTrans ? '' : 'hidden'}">${line.v}</div>
+            `;
+            display.appendChild(div);
+        });
+        stopAudio();
+    }
+
+    function toggleTrans() {
+        showTrans = !showTrans;
+        document.querySelectorAll('.vi').forEach(el => {
+            if(showTrans) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        });
+    }
+
+    function speakLine(index, autoNext = false) {
+        stopAudio();
+        isSpeaking = true;
+
+        document.querySelectorAll('.line').forEach(el => el.classList.remove('active'));
+        const activeEl = document.getElementById(`line-${index}`);
+        if(activeEl) {
+            activeEl.classList.add('active');
+            activeEl.scrollIntoView({behavior: "smooth", block: "center"});
+        }
+
+        const utterance = new SpeechSynthesisUtterance(currentData[index].e);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        
+        const voices = synth.getVoices();
+        const preferred = voices.find(v => v.lang.includes('en-US') && v.name.includes('Google'));
+        if(preferred) utterance.voice = preferred;
+
+        utterance.onend = () => {
+            if(autoNext && index < currentData.length - 1 && isSpeaking) {
+                setTimeout(() => speakLine(index + 1, true), 400);
+            } else {
+                if(!autoNext) isSpeaking = false;
+            }
+        };
+
+        synth.speak(utterance);
+    }
+
+    function playAll() {
+        if(!currentData) return;
+        isSpeaking = true;
+        speakLine(0, true);
+    }
+
+    function stopAudio() {
+        synth.cancel();
+        isSpeaking = false;
+        document.querySelectorAll('.line').forEach(el => el.classList.remove('active'));
+    }
+
+    window.onload = function() {
+        initMenu();
+        if(window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = () => {};
+        }
+    };
+</script>
+
+</body>
+</html>
